@@ -45,3 +45,8 @@ const forgotPasswordMailgenContent = (username,passwordResetUrl) =>{
         outro : "Need help, or have question just reply to this email, we'd love to help."
     }
 }
+
+export {
+    emailVerificationMailgenContent,
+     forgotPasswordMailgenContent
+    };
