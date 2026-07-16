@@ -48,5 +48,11 @@ const registerUser = asyncHandler(async(req,res)=>{
     })
     // because our use have User(schema) So it have all the method available in the userSchema
     const {unHashedToken, hashedToken , tokenExpiry} = user.generateTemporaryToken()
+
+    // Now save the tokens into the fields in schema
+    user.emailVerificationToken = hashedToken
+    user.emailVerificationExpiry = tokenExpiry
+
+    await user.save({validateBeforeSave : false})
 })
 
