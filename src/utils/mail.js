@@ -1,9 +1,48 @@
 import Mailgen from "mailgen";
+import nodemailer from "nodemailer";
 
 /**
  * First learn about how to create/generate Email(efficiently)
  * Then move to send Email
  */
+
+const transporter = nodemailer.createTransport({
+    host: process.env.MAILTRAP_SMTP_HOST,
+    port: process.env.MAILTRAP_SMTP_PORT,
+    auth: {
+        user: process.env.MAILTRAP_SMTP_USER,
+        pass: process.env.MAILTRAP_SMTP_PASS
+    }
+})
+
+const sendEmail = async (options) => {
+    //mailgen require Default Branding (Docs)
+    const mailGenerator = new Mailgen({
+        theme: 'default',
+        product : {
+            name: "Task Manager",
+            link: "https://tasjmanagerlink.com"
+        }
+    });
+
+    const emailTextual = mailGenerator.generatePlaintext(options.MailgenContent) // we provide MailgenContent in options
+    const emailHTML = mailGenerator.generate(options.MailgenContent)
+
+    const mail = {
+        from:"aliharoon0111@gmail.com",
+        to: options.email,
+        subject : options.subject,
+        text: emailTextual,
+        html: emailHTML
+    };
+
+    try {
+        await transporter.sendMail(mail)
+    } catch (error) {
+        console.error("Email service failed siliently ,(this might happen because of credential) make sure that you have provided your MAILTRAP credential in the .env file");
+        console.error("Error",error)
+    }
+}
 
 // Step 1 : Generating the email content
 const emailVerificationMailgenContent = (username, verificationUrl) =>{
