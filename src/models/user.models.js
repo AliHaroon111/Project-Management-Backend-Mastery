@@ -63,11 +63,10 @@ const userSchema = new Schema(
     },
 )
 
-userSchema.pre('save', async function(next){
+userSchema.pre('save', async function(){
     //if we dont have this condition then this pre hook will run for every save
-    if(!this.isModified("password")) return next()  // mean if the modified thing is not password 
-    const password = await bcrypt.hash(this.password,10)
-    next()
+    if(!this.isModified("password")) return  // mean if the modified thing is not password 
+    this.password = await bcrypt.hash(this.password,10)
 })
 
 userSchema.methods.isPasswordCorrect = async function(password) {
@@ -108,7 +107,7 @@ userSchema.methods.generateTemporaryToken = function(){
     const unHashedToken = crypto.randomBytes(20).toString("hex")
 
     const hashedToken = crypto
-        .createHash("sha-265")
+        .createHash("sha256")
         .update(unHashedToken)
         .digest("hex")
 
