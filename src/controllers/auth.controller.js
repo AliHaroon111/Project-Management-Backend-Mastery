@@ -25,5 +25,6 @@ const registerUser = asyncHandler(async(req,res)=>{
         isEmailVerified: false
     })
     // because our use have User(schema) So it have all the method available in the userSchema
+    const {unHashedToken, hashedToken , tokenExpiry} = user.generateTemporaryToken()
 })
 
