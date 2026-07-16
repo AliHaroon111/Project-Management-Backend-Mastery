@@ -2,6 +2,7 @@ import {User} from "../models/user.models.js";
 import ApiResponse from "../utils/api-response.js";
 import ApiError from "../utils/api-error.js";
 import asyncHandler from "../utils/async-handler.js";
+import { emailVerificationMailgenContent, sendEmail } from "../utils/mail.js";
 
 
 const generateAccessAndRefressToken = async(userId) =>{
@@ -54,5 +55,32 @@ const registerUser = asyncHandler(async(req,res)=>{
     user.emailVerificationExpiry = tokenExpiry
 
     await user.save({validateBeforeSave : false})
+
+    await sendEmail({
+        email: user?.email,
+        subject: "Please verify your email",
+        MailgenContent: emailVerificationMailgenContent(
+            user.username,
+            `${req.protocol}://${req.get("host")}/api/v1/users/verify-email/${unHashedToken}`,
+        )
+    });
+
+     //Responce back to the request
+     const createdUser =await User.findById(user._id).select( // select says i don't want that field
+        "-password -refreshToken -emailVerificationToken -emailVerificationExpiry",
+    );
+    if(!createdUser){
+        throw new ApiError(500, "Something went wrong while registering a user")
+    }
+
+    res
+    .status(201)
+    .json(
+        new ApiResponse(
+            200,
+            {user: createdUser},
+            "User registered seccessfully and verification email has been sent on your email"
+        )
+    )
 })
 
