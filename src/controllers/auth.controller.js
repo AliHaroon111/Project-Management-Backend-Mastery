@@ -4,6 +4,28 @@ import ApiError from "../utils/api-error.js";
 import asyncHandler from "../utils/async-handler.js";
 
 
+const generateAccessAndRefressToken = async(userId) =>{
+    try {
+        const user = await User.findById(userId)
+    //comment this(above line) and see below why we crt this
+
+    const accessToken = user.generateAccessToken();
+    const refreshToken = user.generateRefreshToken();
+
+    user.refreshToken = refreshToken // now this refreshToken that we generated now is Going in the database -----> Not save yet (but field is populated)
+    
+    // now to save 
+    await user.save({validateBeforeSave: false})
+    return {accessToken, refreshToken}
+
+    } catch (error) {
+        throw new ApiError(
+            500,
+            "Something went wrong while generating access token"
+        )
+    }
+}
+
 const registerUser = asyncHandler(async(req,res)=>{
     const {username,email,password,role} = req.body
 
