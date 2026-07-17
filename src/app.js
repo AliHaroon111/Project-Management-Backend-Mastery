@@ -1,5 +1,8 @@
 import express from "express"
 import cors from "cors"
+// Import the Routes
+import healthCheckRouter from "./routes/healthcheck.route.js"
+import authRouter from "./routes/auth.routes.js"
 
 const app = express()
 
@@ -21,14 +24,7 @@ const app = express()
       res.send("Hello world")
    })
    
-   app.get("/instagram",(req,res)=>{
-      res.send("Insta is Dumpty now a days")
-   })
-   
-   // Import the Routes
-   import healthCheckRouter from "./routes/healthcheck.route.js"
-   import authRouter from "./routes/auth.routes.js"
-
+   // Routes
    app.use('/api/v1/healthcheck',healthCheckRouter)
    app.use('/api/v1/auth',authRouter)
 

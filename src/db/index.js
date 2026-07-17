@@ -9,7 +9,7 @@ const connectDB = async () =>{
         //Remember Always to use Await   ------------> For interview Itself🤪
 
         await mongoose.connect(process.env.DATABASE_URL)
-        console.log("Connected Successfully😃")
+        console.log("MongoDB Connected Successfully😃")
     } catch (error) {
         console.error("Bad Things may happens - MongoDB Connection error",error)
         process.exit(1)

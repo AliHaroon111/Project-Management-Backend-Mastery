@@ -60,8 +60,8 @@ const emailVerificationMailgenContent = (username, verificationUrl) =>{
             },
             outro: "Need help, or have questions? Just reply to this email, We'd love to help."
     }
-}
-}
+};
+};
 
 // same as above - // generating email
 const forgotPasswordMailgenContent = (username,passwordResetUrl) =>{

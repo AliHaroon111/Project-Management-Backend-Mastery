@@ -41,7 +41,7 @@ const registerUser = asyncHandler(async(req,res)=>{
         throw new ApiError(409,"User with email or username already exists",[])
     }
 
-    const user = User.create({ //here User-->not able to access schema methods because it's the mongoose model but {user} can why? bcz User is a mongoose method we already imported from model itsel
+    const user = await User.create({ //here User-->not able to access schema methods because it's the mongoose model but {user} can why? bcz User is a mongoose method we already imported from model itsel
         username,
         email,
         password,
