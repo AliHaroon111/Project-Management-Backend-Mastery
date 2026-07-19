@@ -3,8 +3,10 @@ import cors from "cors"
 // Import the Routes
 import healthCheckRouter from "./routes/healthcheck.route.js"
 import authRouter from "./routes/auth.routes.js"
+import cookieParser from "cookie-parser";
 
 const app = express()
+app.use(cookieParser())
 
    //Basic Configurations
    app.use(express.json({limit:"16kb"}))
