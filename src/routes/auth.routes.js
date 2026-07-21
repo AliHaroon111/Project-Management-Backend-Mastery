@@ -1,5 +1,5 @@
 import { Router } from "express"
-import { login, logoutUser, registerUser } from "../controllers/auth.controller.js";
+import { login, logoutUser, registerUser, getCurrentUser } from "../controllers/auth.controller.js";
 import { validate } from "../middlewares/validator.middleware.js"
 import { 
     userLoginValidator, 
@@ -15,5 +15,6 @@ router.route("/login").post(userLoginValidator(), validate, login)
 
 // secure routes
 router.route("/logout").post(verifyJWT, logoutUser)
+router.route("/current-user").get(verifyJWT, getCurrentUser)
 
 export default router
