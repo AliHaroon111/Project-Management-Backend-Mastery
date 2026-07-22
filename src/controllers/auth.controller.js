@@ -1,3 +1,4 @@
+import crypto from "crypto"
 import {User} from "../models/user.models.js";
 import ApiResponse from "../utils/api-response.js";
 import ApiError from "../utils/api-error.js";
@@ -51,7 +52,7 @@ const registerUser = asyncHandler(async(req,res)=>{
     const {unHashedToken, hashedToken , tokenExpiry} = user.generateTemporaryToken()
 
     // Now save the tokens into the fields in schema
-    user.emailVerificationToken = hashedToken
+    user.emailVerificationToken = hashedToken   //hashed token saved in DB and unHashed send with email URL
     user.emailVerificationExpiry = tokenExpiry
 
     await user.save({validateBeforeSave : false})
@@ -166,4 +167,50 @@ const getCurrentUser = asyncHandler( async(req, res) =>{
         )
 })
 
-export {registerUser, login, logoutUser, getCurrentUser }
+const verifyEmail = asyncHandler( async(req, res) =>{
+    const verificationToken = req.params // this 'verificationToken' comes from the routes
+
+    if(!verificationToken){
+        throw new ApiError(400, "Email verification token is missing go ahead and check")
+    }
+
+    let hashedToken = crypto //hash the unHashedToken again that we get from url ---> this will give you the same hashedToken that is stored in you DB
+        .createHash("sha256")
+        .update(verificationToken)
+        .digest("hex")
+
+    const user = await User.findOne({
+        emailVerificationToken: hashedToken, // the token we just hashed above now
+        emailVerificationExpiry: {$gt: Date.now()}
+    })
+
+    if(!user){
+        throw new ApiError(400, "Token is invalid or expired")
+    }
+
+    user.emailVerificationToken = undefined; // dont want unneccasary data
+    user.emailVerificationExpiry = undefined;
+
+    user.isEmailVerified = true
+    await user.save({validateBeforeSave: false})
+
+    return res
+        .status(200)
+        .json(
+            new ApiResponse(
+                200,
+                {
+                    isEmailVerified: true,
+                },
+                "Email is Verified",
+            ),
+        )
+});
+
+export { 
+    registerUser,
+    login,
+    logoutUser,
+    getCurrentUser,
+    verifyEmail
+    }
