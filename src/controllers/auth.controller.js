@@ -207,10 +207,49 @@ const verifyEmail = asyncHandler( async(req, res) =>{
         )
 });
 
+const resendEmailVerificaction = asyncHandler( async(req, res) =>{
+    // resendEmailverification will only send by the user who is already loggedIn
+    const user = await User.findById(req.user._id); // by verifyJWT
+    if(!user){
+        throw new ApiError(404, "User does not exits")
+    }
+    
+    if(user.isEmailVerified){
+        throw new ApiError(409, "Email is already verified")
+    }
+    // now if the email is not verified
+    const {unHashedToken, hashedToken , tokenExpiry} = user.generateTemporaryToken()
+
+    // Now save the tokens into the fields in schema - repeat the process
+    user.emailVerificationToken = hashedToken   
+    user.emailVerificationExpiry = tokenExpiry
+
+    await user.save({validateBeforeSave : false})
+
+    await sendEmail({
+        email: user?.email,
+        subject: "Please verify your email",
+        MailgenContent: emailVerificationMailgenContent(
+            user.username,
+            `${req.protocol}://${req.get("host")}/api/v1/users/verify-email/${unHashedToken}`,
+        )
+    });
+    return res
+        .status(200)
+        .json(
+            new ApiResponse(
+                200,
+                {},
+                "Mail has been sent to your email ID"
+            )
+        )
+})
+
 export { 
     registerUser,
     login,
     logoutUser,
     getCurrentUser,
-    verifyEmail
+    verifyEmail,
+    resendEmailVerificaction
     }
