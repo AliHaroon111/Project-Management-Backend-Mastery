@@ -1,10 +1,10 @@
-import crypto from "crypto"
+import crypto, { hash } from "crypto"
 import jwt from "jsonwebtoken"
 import {User} from "../models/user.models.js";
 import ApiResponse from "../utils/api-response.js";
 import ApiError from "../utils/api-error.js";
 import asyncHandler from "../utils/async-handler.js";
-import { emailVerificationMailgenContent, sendEmail } from "../utils/mail.js";
+import { emailVerificationMailgenContent, forgotPasswordMailgenContent, sendEmail } from "../utils/mail.js";
 
 
 const generateAccessAndRefressToken = async(userId) =>{
@@ -294,6 +294,42 @@ const refreshAccessToken = asyncHandler( async(req, res) =>{
     }
 })
 
+const forgotPasswordRequest = asyncHandler( async(req, res) =>{
+    const {email} = req.body
+
+    const user = await User.findOne({email})
+
+    if(!user){
+        throw new ApiError(404,"User does not exists", [])
+    }
+
+    const {unHashedToken, hashedToken , tokenExpiry} = user.generateTemporaryToken()
+
+    user.emailVerificationToken = hashedToken
+    user.emailVerificationExpiry = tokenExpiry
+
+    await user.save({validateBeforeSave: false})
+
+    await sendEmail({
+        email: user?.email,
+        subject: "Please verify your email",
+        MailgenContent: forgotPasswordMailgenContent(
+            user.username,
+            `${process.env.FORGOT_PASSWORD_REDIRECT_URL}/${unHashedToken}`,
+        )
+    });
+    
+    return res
+        .status(200)
+        .json(
+            new ApiResponse(
+                200,
+                {},
+                "Passsword reset mail has been sent to your mail id"
+            )
+        )
+})
+
 export { 
     registerUser,
     login,
@@ -301,5 +337,6 @@ export {
     getCurrentUser,
     verifyEmail,
     resendEmailVerificaction,
-    refreshAccessToken
+    refreshAccessToken,
+    forgotPasswordRequest
     }
