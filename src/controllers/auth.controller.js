@@ -208,7 +208,7 @@ const verifyEmail = asyncHandler( async(req, res) =>{
         )
 });
 
-const resendEmailVerificaction = asyncHandler( async(req, res) =>{
+const resendEmailVerification = asyncHandler( async(req, res) =>{
     // resendEmailverification will only send by the user who is already loggedIn
     const user = await User.findById(req.user._id); // by verifyJWT
     if(!user){
@@ -392,7 +392,7 @@ export {
     logoutUser,
     getCurrentUser,
     verifyEmail,
-    resendEmailVerificaction,
+    resendEmailVerification,
     refreshAccessToken,
     forgotPasswordRequest,
     resetForgotPassword,
