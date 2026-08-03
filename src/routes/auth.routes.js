@@ -28,4 +28,4 @@ router.route("/change-password").post(verifyJWT,userChangeCurrentPasswordValidat
 router.route("/resend-email-verification").post(verifyJWT,resendEmailVerification)
 
 
-export default router
+export default router 
