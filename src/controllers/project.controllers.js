@@ -173,7 +173,7 @@ const addMembersToProject = asyncHandler( async (req, res) => {
         throw new ApiError(404,"User does not exists");
     }
 
-    await projectMember.findByIdAndUpdate(
+    await ProjectMember.findByIdAndUpdate(
         {
             user: new mongoose.Types.ObjectId(user._d),
             project: new mongoose.Types.ObjectId(projectId)
@@ -205,7 +205,7 @@ const getProjectMembers = asyncHandler( async (req, res) => {
         throw new ApiError(404,"Project does not exists");
     }
 
-    const projectMembers = await projectMember.aggregate([
+    const projectMembers = await ProjectMember.aggregate([
         {
             $match: {
                 project: new mongoose.Types.ObjectId(projectId)
@@ -265,7 +265,7 @@ const updateMemberRole = asyncHandler( async (req, res) => {
         throw new ApiError(400, "Invalid Role")
     }
 
-    let projectMember = await projectMember.findOne({
+    let projectMember = await ProjectMember.findOne({
         project: new mongoose.Types.ObjectId(projectId),
         user: new mongoose.Types.ObjectId(userId)
     })
@@ -274,7 +274,7 @@ const updateMemberRole = asyncHandler( async (req, res) => {
         throw new ApiError(400, "Project member not found")
     }
 
-    projectMember = await projectMember.findByIdAndUpdate(
+    projectMember = await ProjectMember.findByIdAndUpdate(
         projectMember._id,
         {
             role: newRole
@@ -301,7 +301,7 @@ const updateMemberRole = asyncHandler( async (req, res) => {
 const deleteMember = asyncHandler( async (req, res) => {
     const {projectId, userId} = req.params
 
-    let projectMember = await projectMember.findOne({
+    let projectMember = await ProjectMember.findOne({
         project: new mongoose.Types.ObjectId(projectId),
         user: new mongoose.Types.ObjectId(userId)
     })
@@ -310,7 +310,7 @@ const deleteMember = asyncHandler( async (req, res) => {
         throw new ApiError(400, "Project member not found")
     }
 
-    projectMember = await projectMember.findByIdAndDelete(
+    projectMember = await ProjectMember.findByIdAndDelete(
         projectMember._id,
     )
     if(!projectMember){
