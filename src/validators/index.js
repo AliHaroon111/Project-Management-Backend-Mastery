@@ -1,4 +1,5 @@
 import { body } from "express-validator"; // also query use Based on need
+import { AvailableUserRole } from "../utils/constants.js";
 
 const userRegisterValidator = () =>{
     return [
@@ -80,11 +81,28 @@ const createProjecValidator = () => {
     ];
 }
 
+const addMembersToProjectValidator = () => {
+    return [
+        body("email")
+            .trim()
+            .notEmpty()
+            .withMessage("Email is required")
+            .isEmail()
+            .withMessage("Email is invalid"),
+        body("role")
+            .notEmpty()
+            .withMessage("Role is required")
+            .isIn(AvailableUserRole) // IsIn --> check something is Available in some array or Not
+            .withMessage("Role is invalid"),
+    ]
+}
+
 export {
     userRegisterValidator,
      userLoginValidator,
      userChangeCurrentPasswordValidator,
      userForgotPasswordValidator,
      userResetForgotPasswordValidator,
-     createProjecValidator
+     createProjecValidator,
+     addMembersToProjectValidator
 }
