@@ -31,7 +31,7 @@ export const verifyJWT = asyncHandler(async(req, res, next)=>{
     }
 });
 
-export const validateProjecPermission = (roles = [] => {
+export const validateProjecPermission = (roles = []) => {
     asyncHandler( async (req, res, next) =>{
         const {projectId} = req.params
 
@@ -62,4 +62,4 @@ export const validateProjecPermission = (roles = [] => {
 
         next();  // mean you pass the middleware and move next to controller or anything else
     })
-})
+};
