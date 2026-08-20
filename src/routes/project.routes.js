@@ -9,7 +9,7 @@ import {
     getProjectMembers,
     updateMemberRole,
     deleteMember
-} from "../controllers/project.controller.js";
+} from "../controllers/project.controllers.js";
 import { validate } from "../middlewares/validator.middleware.js"
 import {
     createProjecValidator,
@@ -35,11 +35,10 @@ router
         validate,
         updateProject
     )
-    .delete(
-        validateProjecPermission([userRoleEnum.ADMIN]), deleteProject)
+    .delete(validateProjecPermission([userRoleEnum.ADMIN]), deleteProject)
 
 router
-    .route(":projectId/members") // when you put colon : --> express automatically takes this is from 'params'
+    .route("/:projectId/members") // when you put colon : --> express automatically takes this is from 'params'
     .get(getProjectMembers)
     .post(
         validateProjecPermission([userRoleEnum.ADMIN]),
@@ -49,7 +48,8 @@ router
     )
 
 router
-    .route(":projectId/members/:userId")
+    .route("/:projectId/members/:userId")
     .put(validateProjecPermission([userRoleEnum.ADMIN]),updateMemberRole)
     .delete(validateProjecPermission([userRoleEnum.ADMIN]), deleteMember)
+    
 export default router

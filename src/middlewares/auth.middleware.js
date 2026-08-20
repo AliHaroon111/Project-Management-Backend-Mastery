@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import { header } from "express-validator";
 import { User } from "../models/user.models.js";
 import { ProjectMember } from "../models/projectmember.models.js";
@@ -32,7 +33,7 @@ export const verifyJWT = asyncHandler(async(req, res, next)=>{
 });
 
 export const validateProjecPermission = (roles = []) => {
-    asyncHandler( async (req, res, next) =>{
+    return asyncHandler( async (req, res, next) =>{
         const {projectId} = req.params
 
         if(!projectId){
