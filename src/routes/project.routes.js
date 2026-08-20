@@ -26,7 +26,7 @@ router
     .get(getProjects)
     .post(createProjecValidator(), validate, createProject) // we have "/" and the get request also running and the post also
 
-    router
+router
     .route("/:projectId")
     .get(validateProjecPermission(AvailableUserRole), getProjectById) // who should be able to get the project
     .put(
@@ -35,5 +35,21 @@ router
         validate,
         updateProject
     )
+    .delete(
+        validateProjecPermission([userRoleEnum.ADMIN]), deleteProject)
 
+router
+    .route(":projectId/members") // when you put colon : --> express automatically takes this is from 'params'
+    .get(getProjectMembers)
+    .post(
+        validateProjecPermission([userRoleEnum.ADMIN]),
+        addMembersToProjectValidator(),
+        validate,
+        addMembersToProject
+    )
+
+router
+    .route(":projectId/members/:userId")
+    .put(validateProjecPermission([userRoleEnum.ADMIN]),updateMemberRole)
+    .delete(validateProjecPermission([userRoleEnum.ADMIN]), deleteMember)
 export default router
