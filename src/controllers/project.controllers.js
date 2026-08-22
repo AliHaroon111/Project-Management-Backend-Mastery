@@ -8,7 +8,7 @@ import mongoose from "mongoose";
 import { AvailableUserRole, userRoleEnum } from "../utils/constants.js";
 
 const getProjects = asyncHandler( async (req, res) => {
-    const projects = await projectMember.aggregate([
+    const projects = await ProjectMember.aggregate([
         {
             $match: {
                 user: new mongoose.Types.ObjectId(req.user._id) // mean I'm 100% sure this is a mongoose ObjID
@@ -93,7 +93,7 @@ const createProject = asyncHandler( async (req, res) => {
         createdBy: new mongoose.Types.ObjectId(req.user._id)
     });
     // we create a project - but this is our respnosibilty to create Admin for this project
-    await projectMember.create({
+    await ProjectMember.create({
         user: new mongoose.Types.ObjectId(req.user._id),
         project: new mongoose.Types.ObjectId(project._id),
         role: userRoleEnum.ADMIN

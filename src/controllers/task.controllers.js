@@ -8,7 +8,21 @@ import mongoose from "mongoose";
 
 
 const getTasks = asyncHandler(async (req, res) => {
-    //Test
+    const {projectId} = req.params
+    const project = await Project.findById(projectId)
+
+    if(!project){
+        throw new ApiError(404,"Project not found")
+    }
+    
+    const tasks = await Task.find({
+        project: new mongoose.Types.ObjectId(projectId)
+    }).populate("assignedTo", "avatar username fullName") // for example in task if i want to go into the User So i use ' populate '
+    return res
+        .status(201)
+        .json(
+            new ApiResponse(201, tasks, "Task fetched successfully")
+        )
 });
 
 const createTask = asyncHandler(async (req, res) => {
